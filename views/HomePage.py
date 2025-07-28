@@ -7,29 +7,29 @@ def show_home():
     
     
     st.markdown("""
-    ## Analyze your Customer Feedback by:
-    
-    - Customer feedback throughout the period of your survey (can be yearly, monthly, etc.)
-    - Measure NPS scores showing who are the promoters, passives and detractors
-    - Gain insights from customer comments and uses NLP to analyze the sentiment of the comments
+    ### Analyze your Customer Feedback:
+    - Visualize data throughout the period of your survey (can be yearly, monthly, etc.)
+    - Measure NPS scores showing who are the Promoters, Passives and Detractors
+    - Gain insights from customer comments and analyze the sentiment of the comments
+    - Experience the power of Machine Learning models to predict NPS scores and summarize customer feedback
     """)
     
     st.warning("""
         🚀 **Ready to unlock all features?**  
         Click the button below read more about the Project!
         """)
-    if st.button("Unlock key features", key="unlock_features"):
+    if st.button("Unlock key features", key="unlock_features", help="Click to unlock key features", type="primary"):
         st.success("Key features unlocked! 🎉")
         send_discord_message("👀 Button to unlock features has been clicked at home.")
         st.balloons()
         
         st.markdown("### Key Features")
         
-        col1, col2, col3 = st.columns(3)
+        col1, col2, col3, col4 = st.columns(4)
         
         with col1:
             st.markdown("""
-            #### 📈 NPS Analysis
+            ##### 📈 NPS Analysis
             - Calculate Net Promoter Score
             - Track trends over time
             - Filter by store and date
@@ -37,15 +37,23 @@ def show_home():
         
         with col2:
             st.markdown("""
-            #### 💬 Sentiment Analysis
+            ##### 💬 Sentiment Analysis
             - Analyze customer sentiment
-            - Visualize sentiment distribution
+            - View sentiment distribution
             - Generate word clouds
             """)
         
         with col3:
             st.markdown("""
-            #### 🗣️ Translation
+            ##### 💥 Topic Modeling
+            - Analyze customer feedback
+            - Have a taste of BERTopic
+            - Visualize topics
+            """)
+        
+        with col4:
+            st.markdown("""
+            ##### 🗣️ Translation
             - Translate customer feedback
             - Support for multiple languages
             - Batch process CSV files
@@ -77,13 +85,11 @@ def show_home():
         st.markdown("---")
         st.markdown("### Group Members")
         st.markdown("""
-        | Name | Role | Email | GitHub | LinkedIn |
-        | --- | --- | --- | --- | --- |
-        | Luis  | Software Engineer | luis.faria@torrens.edu.au | [luisfaria](https://github.com/lfariabr) | [luisfaria](https://linkedin.com/in/lfariabr)
-        | Chin  | Software Engineer | chin@torrens.edu.au | [luisfaria](https://github.com/lfariabr) | [luisfaria](https://linkedin.com/in/lfariabr)
-        | Chau | Software Engineer | chau@torrens.edu.au | [luisfaria](https://github.com/lfariabr) | [luisfaria](https://linkedin.com/in/lfariabr)
+        | Name | Role | Email | LinkedIn |
+        | --- | --- | --- | --- |
+        | Luis  | Software Engineer | luis.faria@torrens.edu.au | [luisfaria](https://linkedin.com/in/lfariabr)
+        | Chau | Software Engineer | chau@torrens.edu.au | [chau](https://linkedin.com/in/chau)
         
-
         """)
 
 # This makes the function available when the module is imported

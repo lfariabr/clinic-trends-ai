@@ -7,45 +7,31 @@ import requests
 # Add parent directory to path to import utils
 sys.path.append(str(Path(__file__).parent.parent))
 from utils.preprocessing import load_and_process_csv, calculate_nps
-from utils.visualizations import nps_donut_chart, monthly_nps_trend_chart
+from utils.visualizations import nps_donut_chart, monthly_nps_trend_chart, create_nps_explanations
 from utils.ui_filters import get_year_store_filters
 from utils.nlp_analysis import display_sentiment_distribution, display_wordcloud, annotate_sentiments
 from utils.alerts import send_discord_message
+from utils.data_upload import data_upload
+
 
 def show_dashboard():
     """Show the dashboard page content."""
 
     st.title("📈 NPS Analytics Dashboard")
     
-    st.markdown("""
-    **Explore powerful insights from your customer feedback.**
+    create_nps_explanations()
 
-    The NPS Analytics Dashboard enables you to:
-    
-    - **Track customer feedback trends** over time (monthly, quarterly, yearly)
-    - **Visualize NPS performance** and identify Promoters, Passives, and Detractors
-    - **Analyze customer comments** using NLP to reveal underlying sentiment patterns
-    - **Compare NPS vs. sentiment alignment** to detect potential mismatches or hidden insights
-    
-    Use this dashboard to turn raw feedback into actionable strategies and improve customer experience.
-    """)
+    st.markdown("---")
 
-    st.markdown("### 📁 Data Upload")
-    csv_url = "https://raw.githubusercontent.com/lfariabr/masters-swe-ai/master/T1-Software-Engineering-Principles/projects/clinictrends_ai/public/clinicTrendsAiSample.csv"
-    response = requests.get(csv_url)
+    col1, col2 = st.columns(2)
 
-    if response.status_code == 200:
-        st.download_button(
-            label="⬇️ Download Sample CSV Data",
-            data=response.content,
-            file_name="clinicTrendsAiSample.csv",
-            mime="text/csv"
-        )
-    else:
-        st.error("Sample CSV file not found!")
-        
-    uploaded_file = st.file_uploader(
-        "Upload your CSV file with customer feedback or use the sample data",
+    with col1:
+        data_upload()
+
+    with col2:
+        st.markdown("#### 📁 Data Upload")
+        uploaded_file = st.file_uploader(
+        "Upload your CSV file or use the sample data",
         type="csv",
         help="File should contain 'Comment' and 'Score' columns"
     )
@@ -53,11 +39,23 @@ def show_dashboard():
     if uploaded_file is not None:
         send_discord_message("🔄 Starting data upload and validation process at NPS Page")
         df = load_and_process_csv(uploaded_file)
+
+        with st.expander("👀 Data Preview (just in case you want to check it)"):
+            st.dataframe(df.sample(min(5, len(df))), use_container_width=True)
+            total_records = len(df)
+            st.info(f"Dataset shape: {df.shape[0]} rows × {df.shape[1]} columns")
+            st.success(f"Total records loaded: {total_records}")
+        
+        st.markdown("---")
+
+        st.subheader("NPS Filters")
         selected_year, selected_store = get_year_store_filters(df)
 
-        # Create filters
-        col1, col2 = st.columns(2)
-    
+        st.markdown("---")
+
+        st.subheader("NPS Analysis")
+
+        col1, col2 = st.columns(2)    
         filtered_df = df.copy()
 
         if selected_year != "All":
@@ -68,13 +66,6 @@ def show_dashboard():
 
         if not filtered_df.empty:
             nps_score = calculate_nps(filtered_df)
-
-            with st.expander("👀 Data Preview (just in case you want to check it)"):
-                st.dataframe(filtered_df.sample(min(5, len(filtered_df))), use_container_width=True)
-                total_records = len(filtered_df)
-                st.info(f"Dataset shape: {filtered_df.shape[0]} rows × {filtered_df.shape[1]} columns")
-            
-            st.markdown("---")
             
             col1, col2 = st.columns(2)
             
@@ -124,7 +115,6 @@ def show_dashboard():
                     neg_thresh=-0.05
                 )
 
-                # sentiment alert
                 neg_rate = (
                     len(annotated_df[annotated_df["Sentiment"] == "Negative"])
                     / len(annotated_df) * 100
@@ -137,25 +127,11 @@ def show_dashboard():
                 else:
                     st.success(f"✅ Low negative sentiment ({neg_rate:.1f}%). Great job!")
 
-                # # Optional sentiment alert
-                # neg_rate = (
-                #     len(annotated_df[annotated_df["Sentiment"] == "Negative"])
-                #     / len(annotated_df) * 100
-                # )
-                # if neg_rate > 30:
-                #     st.error(f"⚠️ ALERT: High negative sentiment detected ({neg_rate:.1f}%).")
-                #     send_discord_message(f"🚨 High negative sentiment detected ({neg_rate:.1f}%).")
-                # elif neg_rate > 10:
-                #     st.warning(f"🔔 Moderate negative sentiment ({neg_rate:.1f}%). Monitor customer feedback closely.")
-                # else:
-                #     st.success(f"✅ Low negative sentiment ({neg_rate:.1f}%). Great job!")
-
         else:
             st.warning("No data found for the selected filters.")
 
         st.markdown("---")
     
-        # Apply NLP
         st.subheader("Sentiment Distribution")
         col1, col2 = st.columns(2)
         with col1:
@@ -166,8 +142,9 @@ def show_dashboard():
             neg_thresh = st.slider("Negative threshold", min_value=-0.5, max_value=-0.01, value=-0.05, step=0.01)
 
         with col2:
-            # comming from pre-calculated line 120
             display_sentiment_distribution(annotated_df)
+        
+        st.markdown("---")
 
         st.subheader("Word Cloud from Comments")
         display_wordcloud(annotated_df)
@@ -206,6 +183,7 @@ def show_dashboard():
 
         #     st.altair_chart(bar_chart, use_container_width=True)
         #     st.dataframe(sentiment_distribution_chart, use_container_width=True)
+
     else:
         st.info("""
         👆 **Upload a CSV file to begin NPS analysis**

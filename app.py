@@ -8,7 +8,7 @@ st.set_page_config(
     page_title="ClinicTrends AI",
     page_icon="🤖",
     layout="wide", # centered
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
 # Add the current directory to the path
@@ -20,22 +20,18 @@ try:
         HomePage,
         NPSPage,
         TranslatePage,
-        TrainingPage,
-        TrainingPage2,
-        TrainingPage3,
-        TrainingPage4,
-        ModelsPage
+        ModelsPage,
+        EnhancedModels,
+        TopicModelingPage
     )
 
 except ImportError:
     import views.HomePage as HomePage
     import views.NPSPage as NPSPage
     import views.TranslatePage as TranslatePage
-    import views.TrainingPage as TrainingPage
-    import views.TrainingPage2 as TrainingPage2
-    import views.TrainingPage3 as TrainingPage3
-    import views.TrainingPage4 as TrainingPage4
     import views.ModelsPage as ModelsPage
+    import views.MLExperimentsPage as MLExperimentsPage
+    import views.TopicModelingPage as TopicModelingPage
 
 def main():
     # Sidebar with logo and navigation - this will be our only sidebar
@@ -59,18 +55,12 @@ def main():
         # Page selection
         page = st.radio(
             "",
-            ["Home",
+            ["About",
              "NPS Analysis",
-             "ML Model Comparison",
-
-             # Training
-             # "Training - CM1", # TfidfVectorizer + LogisticRegression @ 'Comment' column.
-             # "Training - CM2", # TfidfVectorizer + LogisticRegression @ 'CommentScore' column.
-             # "Training - CM3", # TfidfVectorizer + LogisticRegression @ 'Comment' column + Hugging Face Transformers.
-             # "Training - CM4", # TfidfVectorizer + LogisticRegression @ 'CommentScore' column + Hugging Face Transformers.
-
-             # Additional
+             "ML Models",
+             "Topic Modeling",
              "Translation",
+             "ML Experiments 🧪",             
             ],
             index=0,
             label_visibility="collapsed"
@@ -82,28 +72,22 @@ def main():
         st.markdown("""
         **ClinicTrends AI**   
         ##### An open source AI-powered tool for analyzing customer feedback and trends.
-        - **Version:** 2.1.0
+        - **Version:** 2.7.0
         - **GitHub:** [clinictrends_ai](https://github.com/lfariabr/masters-swe-ai/tree/master/T1-Software-Engineering-Principles/projects/clinictrends_ai)  
         """)
     
     # Main content based on selection
-    if page == "Home":
+    if page == "About":
         HomePage.show_home()
     elif page == "NPS Analysis":
         NPSPage.show_dashboard()
-    elif page == "ML Model Comparison":
+    elif page == "ML Models":
         ModelsPage.show_models()
-
-
-    elif page == "Training - CM1":
-        TrainingPage.show_training()
-    elif page == "Training - CM2":
-        TrainingPage2.show_training2()
-    elif page == "Training - CM3":
-        TrainingPage3.show_training3()
-    elif page == "Training - CM4":
-        TrainingPage4.show_training4()
-    
+    elif page == "ML Experiments 🧪":
+        MLExperimentsPage.show_enhanced_models()
+    elif page == "Topic Modeling":
+        TopicModelingPage.show_topic_modeling()
+        
     elif page == "Translation":
         TranslatePage.show_translate()
         
