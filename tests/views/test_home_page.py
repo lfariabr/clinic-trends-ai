@@ -14,10 +14,10 @@ def test_home_page_renders_correctly():
     
     # Check for key sections
     markdown_texts = [md.value for md in app.markdown]
-    assert any("### Key Features" in text for text in markdown_texts)
-    assert any("### Get Started" in text for text in markdown_texts)
+    assert any("Visualize data" in text for text in markdown_texts)
+    assert any("Measure NPS" in text for text in markdown_texts)
     
-    # Check for feature cards content
+    # # Check for feature cards content
     feature_sections = [text for text in markdown_texts if "#### " in text]
     assert len(feature_sections) >= 3  # Should have at least 3 feature cards
     assert any("NPS" in text for text in feature_sections)
@@ -30,6 +30,7 @@ def test_navigation_instructions_exist():
     
     # Act
     app.run()
+    app.button("unlock_features").click().run()  # Simulate click
     
     # Assert
     # Check for navigation instructions in info boxes
