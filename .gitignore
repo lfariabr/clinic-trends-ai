@@ -36,3 +36,4 @@ logs/
 *.pkl
 *.joblib
 .env
+.env
